@@ -15,12 +15,18 @@
 ## 2a) Diagrams
 ```mermaid
 flowchart LR
-  UI[UI: Chat + Operator Panel] -->|text/speech| API[API Layer]
-  API -->|normalize slots| NLU[NLU Assist (regex/LLM optional)]
-  API -->|decisions| TREE[Decision Tree Engine]
+  UI[UI - Chat + Operator Panel]
+  API[API Layer]
+  NLU[NLU Assist: regex or LLM (flagged)]
+  TREE[Decision Tree Engine]
+  STATE[In-memory Session State]
+
+  UI -->|text or speech| API
+  API -->|normalize slots| NLU
+  API -->|evaluate| TREE
   TREE -->|next question + rationale| API
   API -->|response| UI
-  API -->|session ctx| STATE[In-memory Session State]
+  API -->|session context| STATE
 ```
 
 ```mermaid
@@ -30,7 +36,7 @@ sequenceDiagram
   participant API as API
   participant NLU as NLU Assist
   participant DT as Decision Tree Engine
-  U->>UI: enter text / (optional) speech
+  U->>UI: enter text or speech (optional)
   UI->>API: POST /ingest (text or transcript)
   API->>NLU: normalize facts (regex or LLM)
   NLU-->>API: facts/slots
